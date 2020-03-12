@@ -216,8 +216,8 @@ public abstract class AbstractRpcRemotingServer extends AbstractRpcRemoting impl
          */
         @Override
         public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-            if (msg instanceof RpcMessage) {
-                RpcMessage rpcMessage = (RpcMessage) msg;
+            if (msg instanceof RpcMessage) { //cz:这里对RegisterTMRequest和PING两种消息处理使用I/O线程，PING逻辑简单可以马上回复，
+                RpcMessage rpcMessage = (RpcMessage) msg; //RegisterTMRequest是为什么？
                 debugLog("read:" + rpcMessage.getBody());
                 if (rpcMessage.getBody() instanceof RegisterTMRequest) {
                     serverMessageListener.onRegTmMessage(rpcMessage, ctx, checkAuthHandler);

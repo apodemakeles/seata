@@ -32,7 +32,9 @@ public class AutoDataSourceProxyRegistrar implements ImportBeanDefinitionRegistr
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         if (!registry.containsBeanDefinition(BEAN_NAME_SEATA_DATA_SOURCE_BEAN_POST_PROCESSOR)) {
-            boolean useJdkProxy = Boolean.valueOf(importingClassMetadata.getAnnotationAttributes(EnableAutoDataSourceProxy.class.getName()).get(ATTRIBUTE_KEY_USE_JDK_PROXY).toString());
+            boolean useJdkProxy = Boolean.valueOf(importingClassMetadata
+                    .getAnnotationAttributes(EnableAutoDataSourceProxy.class.getName())
+                    .get(ATTRIBUTE_KEY_USE_JDK_PROXY).toString());
             AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
                 .genericBeanDefinition(SeataDataSourceBeanPostProcessor.class)
                 .addConstructorArgValue(useJdkProxy).getBeanDefinition();

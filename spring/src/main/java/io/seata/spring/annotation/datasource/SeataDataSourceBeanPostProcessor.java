@@ -69,12 +69,17 @@ public class SeataDataSourceBeanPostProcessor implements BeanPostProcessor {
      * @param originBean
      * @return proxied datasource
      */
-    private Object proxyDataSource(Object originBean) {
+    private Object proxyDataSource(Object originBean) { //cz: 简单的对DataSourceProxy的复用
         DataSourceProxy dataSourceProxy = DataSourceProxyHolder.get().putDataSource((DataSource) originBean);
         if (this.useJdkProxy) {
-            return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), SpringProxyUtils.getAllInterfaces(originBean), (proxy, method, args) -> handleMethodProxy(dataSourceProxy, method, args, originBean));
+            return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                    SpringProxyUtils.getAllInterfaces(originBean),
+                    (proxy, method, args) ->
+                            handleMethodProxy(dataSourceProxy, method, args, originBean));
         } else {
-            return Enhancer.create(originBean.getClass(), (MethodInterceptor) (proxy, method, args, methodProxy) -> handleMethodProxy(dataSourceProxy, method, args, originBean));
+            return Enhancer.create(originBean.getClass(),
+                    (MethodInterceptor) (proxy, method, args, methodProxy) ->
+                            handleMethodProxy(dataSourceProxy, method, args, originBean));
         }
 
     }
@@ -93,7 +98,7 @@ public class SeataDataSourceBeanPostProcessor implements BeanPostProcessor {
     private Object handleMethodProxy(DataSourceProxy dataSourceProxy, Method method, Object[] args, Object originBean) throws InvocationTargetException, IllegalAccessException {
         Method m = BeanUtils.findDeclaredMethod(DataSourceProxy.class, method.getName(), method.getParameterTypes());
         if (null != m) {
-            return m.invoke(dataSourceProxy, args);
+            return m.invoke(dataSourceProxy, args); //cz: 将原始DataSource的调用转交给DataSourceProxy
         } else {
             boolean oldAccessible = method.isAccessible();
             try {

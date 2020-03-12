@@ -78,8 +78,8 @@ public abstract class AbstractRpcRemoting implements Disposable {
     protected final ConcurrentHashMap<Integer, MessageFuture> futures = new ConcurrentHashMap<>();
     /**
      * The Basket map.
-     */
-    protected final ConcurrentHashMap<String, BlockingQueue<RpcMessage>> basketMap = new ConcurrentHashMap<>();
+     */ //
+    protected final ConcurrentHashMap<String, BlockingQueue<RpcMessage>> basketMap = new ConcurrentHashMap<>(); //cz: 主要是AbstractRpcRemotingClient
 
     private static final long NOT_WRITEABLE_CHECK_MILLS = 10L;
     /**

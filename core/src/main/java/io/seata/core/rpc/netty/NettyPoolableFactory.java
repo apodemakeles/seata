@@ -63,7 +63,7 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
             throw new FrameworkException("register msg is null, role:" + key.getTransactionRole().name());
         }
         try {
-            response = rpcRemotingClient.sendAsyncRequestWithResponse(tmpChannel, key.getMessage());
+            response = rpcRemotingClient.sendAsyncRequestWithResponse(tmpChannel, key.getMessage()); //cz: 在连接之后首先注册自己，TM或者RM
             if (!isResponseSuccess(response, key.getTransactionRole())) {
                 rpcRemotingClient.onRegisterMsgFail(key.getAddress(), tmpChannel, response, key.getMessage());
             } else {

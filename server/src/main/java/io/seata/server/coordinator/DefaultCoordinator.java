@@ -353,7 +353,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     /**
      * Undo log delete.
      */
-    protected void undoLogDelete() {
+    protected void undoLogDelete() { //cz: 把Channel暴露给了逻辑层
         Map<String, Channel> rmChannels = ChannelManager.getRmChannels();
         if (rmChannels == null || rmChannels.isEmpty()) {
             LOGGER.info("no active rm channels to delete undo log");

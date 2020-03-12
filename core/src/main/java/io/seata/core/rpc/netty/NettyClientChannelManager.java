@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * @author slievrly
  * @author zhaojun
  */
-class NettyClientChannelManager {
+class NettyClientChannelManager { //cz: 为什么要用两级的池？
     
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientChannelManager.class);
     
@@ -197,9 +197,11 @@ class NettyClientChannelManager {
         }
         Channel channelFromPool;
         try {
-            NettyPoolKey currentPoolKey = poolKeyFunction.apply(serverAddress);
+            NettyPoolKey currentPoolKey = poolKeyFunction.apply(serverAddress);//cz: 内部会new一个NettyPoolKey
             NettyPoolKey previousPoolKey = poolKeyMap.putIfAbsent(serverAddress, currentPoolKey);
+            //cz: 这里，返回null意味着之前不存在，新key进入poolKeyMap，如果不为null，则新key没进入poolKeyMap，还用老key
             if (null != previousPoolKey && previousPoolKey.getMessage() instanceof RegisterRMRequest) {
+                //cz: 这里取出来的是老key，resourceId可能变了，所以要设置一下
                 RegisterRMRequest registerRMRequest = (RegisterRMRequest) currentPoolKey.getMessage();
                 ((RegisterRMRequest) previousPoolKey.getMessage()).setResourceIds(registerRMRequest.getResourceIds());
             }
