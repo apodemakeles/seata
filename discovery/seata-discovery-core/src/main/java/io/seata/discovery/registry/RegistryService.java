@@ -97,7 +97,7 @@ public interface RegistryService<T> {
      * @param key service group
      * @return the service group name
      */
-    default String getServiceGroup(String key) {
+    default String getServiceGroup(String key) { //cz: 注释里写的service group，现在官方叫做事务分组 transaction group
         Configuration config = ConfigurationFactory.getInstance();
         return config.getConfig(PREFIX_SERVICE_ROOT + CONFIG_SPLIT_CHAR + PREFIX_SERVICE_MAPPING + key);
     }
