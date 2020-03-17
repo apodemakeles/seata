@@ -64,7 +64,7 @@ public class MysqlTableMetaCache extends AbstractTableMetaCache {
 
         try {
             //prevent duplicated cache key
-            if (databaseMetaData.supportsMixedCaseIdentifiers()) {
+            if (databaseMetaData.supportsMixedCaseIdentifiers()) { //cz: 这里会有网络请求么？
                 cacheKey.append(defaultTableName);
             } else {
                 cacheKey.append(defaultTableName.toLowerCase());

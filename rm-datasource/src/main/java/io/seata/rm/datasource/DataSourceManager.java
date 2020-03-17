@@ -82,7 +82,7 @@ public class DataSourceManager extends AbstractResourceManager implements Initia
             request.setResourceId(resourceId);
 
             GlobalLockQueryResponse response = null;
-            if (RootContext.inGlobalTransaction()) {
+            if (RootContext.inGlobalTransaction()) { //cz: 似乎没发现二者区别？
                 response = (GlobalLockQueryResponse)RmRpcClient.getInstance().sendMsgWithResponse(request);
             } else if (RootContext.requireGlobalLock()) {
                 response = (GlobalLockQueryResponse)RmRpcClient.getInstance().sendMsgWithResponse(loadBalance(),

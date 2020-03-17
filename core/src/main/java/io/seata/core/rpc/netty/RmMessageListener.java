@@ -104,7 +104,7 @@ public class RmMessageListener implements ClientMessageListener {
     private void handleBranchCommit(RpcMessage request, String serverAddress, BranchCommitRequest branchCommitRequest) {
 
         BranchCommitResponse resultMessage = null;
-        try {
+        try { //cz: 响应使用原连接
             resultMessage = (BranchCommitResponse)handler.onRequest(branchCommitRequest, null);
             getSender().sendResponse(request, serverAddress, resultMessage);
         } catch (Exception e) {

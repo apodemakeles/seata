@@ -87,7 +87,7 @@ public class SelectForUpdateExecutor<T, S extends Statement> extends BaseTransac
                     // #870
                     // execute return Boolean
                     // executeQuery return ResultSet
-                    rs = statementCallback.execute(statementProxy.getTargetStatement(), args);
+                    rs = statementCallback.execute(statementProxy.getTargetStatement(), args);//cz: 先执行select for update先加锁，这一点非常重要
 
                     // Try to get global lock of those rows selected
                     TableRecords selectPKRows = buildTableRecords(getTableMeta(), selectPKSQL, paramAppenderList);
