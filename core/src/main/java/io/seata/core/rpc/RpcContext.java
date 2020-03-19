@@ -61,6 +61,7 @@ public class RpcContext {
 
     /**
      * dbkeyRm
+     * resourceId -> port -> RpcContext
      */
     private ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> clientRMHolderMap;
 
@@ -146,7 +147,7 @@ public class RpcContext {
 
     /**
      * Gets get client rm holder map.
-     *
+     * 所有resourceId的集合
      * @return the get client rm holder map
      */
     public ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> getClientRMHolderMap() {

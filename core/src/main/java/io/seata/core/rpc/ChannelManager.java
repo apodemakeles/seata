@@ -55,7 +55,7 @@ public class ChannelManager {
         RpcContext>>>>();
 
     /**
-     * ip+appname,port
+     * <applicationId:ip, <port,RpcContext>>
      */
     private static final ConcurrentMap<String, ConcurrentMap<Integer, RpcContext>> TM_CHANNELS
         = new ConcurrentHashMap<String, ConcurrentMap<Integer, RpcContext>>();
@@ -180,8 +180,8 @@ public class ChannelManager {
             if (!applicationIdMap.containsKey(applicationId)) { continue; }
             ConcurrentMap<String, ConcurrentMap<Integer,
                 RpcContext>> clientIpMap = applicationIdMap.get(applicationId);
-            if (!clientIpMap.containsKey(clientIp)) { continue; }
-            ConcurrentMap<Integer, RpcContext> portMap = clientIpMap.get(clientIp);
+            if (!clientIpMap.containsKey(clientIp)) { continue; } //cz: 同一applicaionId，同一clientIp下，不同的resourceId的RpcContext
+            ConcurrentMap<Integer, RpcContext> portMap = clientIpMap.get(clientIp);//互相之间都要有其他的 resourceId -> port -> RpcContext 映射，即clientRMHolderMap
             for (ConcurrentMap.Entry<Integer, RpcContext> portMapEntry : portMap.entrySet()) {
                 Integer port = portMapEntry.getKey();
                 if (!sourcePortMap.containsKey(port)) {
