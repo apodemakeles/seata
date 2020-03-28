@@ -157,7 +157,7 @@ public class DefaultCore implements Core {
         if (!shouldCommit) {
             return globalSession.getStatus();
         }
-        if (globalSession.canBeCommittedAsync()) {
+        if (globalSession.canBeCommittedAsync()) { //cz:这里其实就是TCC的判断，canBeCommittedAsync就是AT，Saga，否则就是TCC。
             globalSession.asyncCommit();
             return GlobalStatus.Committed;
         } else {
@@ -222,7 +222,7 @@ public class DefaultCore implements Core {
                     }
                 }
             }
-            if (globalSession.hasBranch()) {
+            if (globalSession.hasBranch()) { //retrying==true的流程下，如果前面有异常，则会进入此流程，结果是本次重试失败
                 LOGGER.info("Global[{}] committing is NOT done.", globalSession.getXid());
                 return false;
             }

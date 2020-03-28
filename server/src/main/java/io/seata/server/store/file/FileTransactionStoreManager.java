@@ -119,7 +119,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
 
     private final ByteBuffer writeBuffer = ByteBuffer.allocateDirect(MAX_WRITE_BUFFER_SIZE);
 
-    private static final FlushDiskMode FLUSH_DISK_MODE = StoreConfig.getFlushDiskMode();
+    private static final FlushDiskMode FLUSH_DISK_MODE = FlushDiskMode.SYNC_MODEL;//StoreConfig.getFlushDiskMode();
 
     private static final int MAX_WAIT_FOR_FLUSH_TIME_MILLS = 2 * 1000;
 
@@ -194,11 +194,11 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
     }
 
     private void flushDisk(long curFileNum, FileChannel currFileChannel) {
-
         if (FLUSH_DISK_MODE == FlushDiskMode.SYNC_MODEL) {
             SyncFlushRequest syncFlushRequest = new SyncFlushRequest(curFileNum, currFileChannel);
             writeDataFileRunnable.putRequest(syncFlushRequest);
             syncFlushRequest.waitForFlush(MAX_WAIT_FOR_FLUSH_TIME_MILLS);
+            System.out.println("完成一次同步刷盘，FILE_FLUSH_NUM:" + FILE_FLUSH_NUM.get());
         } else {
             writeDataFileRunnable.putRequest(new AsyncFlushRequest(curFileNum, currFileChannel));
         }
@@ -296,6 +296,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
             }
         }
         if (flushWriteBuffer(writeBuffer)) {
+            System.out.println("预期外外的flush");
             currFileChannel.force(false);
             return true;
         }
@@ -330,6 +331,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
             }
         }
         try {
+            System.out.println("预期外的force");
             currFileChannel.force(true);
         } catch (IOException e) {
             LOGGER.error("fileChannel force error{}", e.getMessage(), e);
@@ -579,7 +581,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
         @Override
         public void run() {
             while (!stopping) {
-                try {
+                try {//cz: 2秒内没有新的写入操作，则handleStoreRequest(null)，会进行一次flushOnCondition
                     StoreRequest storeRequest = storeRequests.poll(MAX_WAIT_TIME_MILLS, TimeUnit.MILLISECONDS);
                     handleStoreRequest(storeRequest);
                 } catch (Exception exx) {
@@ -622,6 +624,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
 
         private void async(AsyncFlushRequest req) {
             if (req.getCurFileTrxNum() < FILE_FLUSH_NUM.get()) {
+                System.out.println("async.flushOnCondition");
                 flushOnCondition(req.getCurFileChannel());
             }
         }
@@ -652,6 +655,7 @@ public class FileTransactionStoreManager extends AbstractTransactionStoreManager
 
         private void flush(FileChannel fileChannel) {
             try {
+                System.out.println("进行了一次flush");
                 fileChannel.force(false);
             } catch (IOException exx) {
                 LOGGER.error("flush error: {}", exx.getMessage(), exx);

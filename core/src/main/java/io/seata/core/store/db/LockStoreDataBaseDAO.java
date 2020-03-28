@@ -109,7 +109,7 @@ public class LockStoreDataBaseDAO implements LockStore, Initialize {
         ResultSet rs = null;
         Set<String> dbExistedRowKeys = new HashSet<>();
         boolean originalAutoCommit = true;
-        if (lockDOs.size() > 1) {
+        if (lockDOs.size() > 1) { //cz:去掉重复
             lockDOs = lockDOs.stream().filter(LambdaUtils.distinctByKey(LockDO::getRowKey)).collect(Collectors.toList());
         }
         try {
@@ -133,7 +133,7 @@ public class LockStoreDataBaseDAO implements LockStore, Initialize {
             String currentXID = lockDOs.get(0).getXid();
             while (rs.next()) {
                 String dbXID = rs.getString(ServerTableColumnsName.LOCK_TABLE_XID);
-                if (!StringUtils.equals(dbXID, currentXID)) {
+                if (!StringUtils.equals(dbXID, currentXID)) { //cz: 只检查xid，不检查branchId，因为分支锁的拥有者仍然是全局事务本身
                     if (LOGGER.isInfoEnabled()) {
                         String dbPk = rs.getString(ServerTableColumnsName.LOCK_TABLE_PK);
                         String dbTableName = rs.getString(ServerTableColumnsName.LOCK_TABLE_TABLE_NAME);
